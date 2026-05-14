@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>保險管理 | PayGuard 支付保障平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+
+<div class="app-layout">
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <a href="dashboard.html">儀表板</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">保險管理</span>
+        </div>
+        <h1 class="page-title">保險管理</h1>
+        <p class="page-subtitle">管理應收帳款保單，追蹤理賠狀態</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-primary btn-sm" onclick="showToast('新保單申請流程開啟中...', 'info')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          申請新保單
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary KPIs -->
+    <div class="stat-cards">
+      <div class="stat-card success">
+        <div class="stat-card-header">
+          <span class="stat-label">生效中保單</span>
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="kpi-active">—</div>
+        <div class="stat-sub">張保單生效中</div>
+        <div class="stat-trend up">↑ 全額保障</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-label">保障總額</span>
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="kpi-coverage">—</div>
+        <div class="stat-sub">所有生效保單合計</div>
+        <div class="stat-trend neutral">應收帳款全保障</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-card-header">
+          <span class="stat-label">累計理賠金額</span>
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="kpi-claimed">—</div>
+        <div class="stat-sub" id="kpi-claimed-count">已理賠筆數</div>
+        <div class="stat-trend up">↑ 快速理賠</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-card-header">
+          <span class="stat-label">平均理賠時間</span>
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">3.5 <span style="font-size:1rem;color:var(--text-muted)">天</span></div>
+        <div class="stat-sub">觸發後平均完成</div>
+        <div class="stat-trend up">↑ 傳統保險 90天+</div>
+      </div>
+    </div>
+
+    <!-- Speed Highlight Banner -->
+    <div style="background:linear-gradient(135deg,#1E2A5E,#3B5BDB);border-radius:var(--radius-lg);padding:20px 28px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div>
+          <div style="color:white;font-weight:700;font-size:1rem">PayGuard 參數型保險 — 理賠速度革命</div>
+          <div style="color:rgba(255,255,255,0.65);font-size:0.85rem;margin-top:3px">逾期30天自動觸發 → AI審核 → 平均3.5天完成給付，告別傳統保險90天等待</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:24px;text-align:center">
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:#34D399">3.5天</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.55)">PayGuard 理賠</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.15)"></div>
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:rgba(255,255,255,0.45)">90天+</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.4)">傳統保險</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Policies -->
+    <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <h2 style="font-size:1.1rem;font-weight:700;color:var(--text-heading)">生效中保單</h2>
+      <span style="font-size:0.8rem;color:var(--text-muted)" id="active-policy-label">載入中...</span>
+    </div>
+    <div class="policy-grid" id="policy-grid">
+      <!-- Skeleton -->
+      <div class="policy-card" style="opacity:0.4">
+        <div class="policy-card-header"></div>
+        <div class="policy-card-body">
+          <div style="height:12px;background:var(--bg-page);border-radius:4px;margin-bottom:8px"></div>
+          <div style="height:12px;background:var(--bg-page);border-radius:4px;width:70%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claims Section -->
+    <div style="margin-top:32px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <h2 style="font-size:1.1rem;font-weight:700;color:var(--text-heading)">理賠紀錄</h2>
+      <span style="font-size:0.8rem;color:var(--text-muted)" id="claims-label">載入中...</span>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap" style="border:none;border-radius:0">
+        <table>
+          <thead>
+            <tr>
+              <th>理賠編號</th>
+              <th>保單編號</th>
+              <th>投保公司</th>
+              <th>觸發日期</th>
+              <th>理賠金額</th>
+              <th>處理天數</th>
+              <th>狀態</th>
+              <th>備註</th>
+            </tr>
+          </thead>
+          <tbody id="claims-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text-muted)">資料載入中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Claims Timeline -->
+    <div style="margin-top:24px">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">最新理賠進度</h3>
+          <span class="badge badge-processing">處理中</span>
+        </div>
+        <div class="card-body">
+          <div class="timeline" id="claims-timeline">
+            <div style="text-align:center;padding:20px;color:var(--text-muted)">載入中...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expired Policies -->
+    <div style="margin-top:32px;margin-bottom:8px">
+      <h2 style="font-size:1.1rem;font-weight:700;color:var(--text-heading)">已到期保單</h2>
+    </div>
+    <div class="card">
+      <div class="table-wrap" style="border:none;border-radius:0">
+        <table>
+          <thead>
+            <tr>
+              <th>保單編號</th>
+              <th>買方</th>
+              <th>發票號碼</th>
+              <th>保障金額</th>
+              <th>保費費率</th>
+              <th>到期日</th>
+              <th>狀態</th>
+            </tr>
+          </thead>
+          <tbody id="expired-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">載入中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Info Callout -->
+    <div class="callout blue" style="margin-top:24px">
+      <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
+        <div class="callout-title">關於參數型保險</div>
+        <div class="callout-text">PayGuard 採用參數型（Parametric）保險模式，觸發條件明確客觀（應收帳款逾期≥30天即自動理賠），無需繁瑣的損失評估程序。保費費率依買方信用評分浮動計算（0.3%–1.2%/年），系統自動核保，最快當日完成投保。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('insurance');
+
+document.addEventListener('payguard:dataLoaded', (e) => {
+  const data = e.detail;
+  const companyMap = {};
+  data.companies.forEach(c => { companyMap[c.company_id] = c.company_name; });
+  const invoiceMap = {};
+  data.invoices.forEach(i => { invoiceMap[i.invoice_id] = i; });
+
+  // KPIs
+  const active = data.policies.filter(p => p.status === 'active');
+  const claimed = data.claims.filter(c => c.status === 'paid');
+  const totalCoverage = active.reduce((s, p) => s + parseInt(p.coverage_amount_ntd || 0), 0);
+  const totalClaimed = claimed.reduce((s, c) => s + parseInt(c.claim_amount_ntd || 0), 0);
+
+  document.getElementById('kpi-active').textContent = active.length;
+  document.getElementById('kpi-coverage').textContent = formatNTD(totalCoverage);
+  document.getElementById('kpi-claimed').textContent = formatNTD(totalClaimed);
+  document.getElementById('kpi-claimed-count').textContent = `共 ${claimed.length} 筆已完成給付`;
+
+  // Active Policy Cards
+  document.getElementById('active-policy-label').textContent = `共 ${active.length} 張生效中`;
+  const grid = document.getElementById('policy-grid');
+  if (active.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)">目前無生效中保單</div>`;
+  } else {
+    grid.innerHTML = active.map(pol => {
+      const buyer = companyMap[pol.buyer_id] || pol.buyer_id;
+      const shortBuyer = buyer.length > 12 ? buyer.substring(0,10)+'...' : buyer;
+      const inv = invoiceMap[pol.invoice_id];
+      const invoiceNum = inv ? inv.invoice_number : pol.invoice_id;
+      const daysLeft = getDaysUntil(pol.end_date);
+      const pct = daysLeft > 0 ? Math.min(100, Math.round(daysLeft / 180 * 100)) : 0;
+      const premiumRate = (parseFloat(pol.premium_rate) * 100).toFixed(1);
+
+      return `<div class="policy-card">
+        <div class="policy-card-header">
+          <div>
+            <div class="policy-id">${pol.policy_id}</div>
+            <div class="policy-type">${shortBuyer}</div>
+          </div>
+          <span class="badge badge-active" style="font-size:0.7rem">生效中</span>
+        </div>
+        <div class="policy-card-body">
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">發票號碼</span>
+            <span class="policy-detail-value" style="font-family:monospace;font-size:0.8rem">${invoiceNum}</span>
+          </div>
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">保障金額</span>
+            <span class="policy-detail-value">${formatNTD(parseInt(pol.coverage_amount_ntd))}</span>
+          </div>
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">保費費率</span>
+            <span class="policy-detail-value">${premiumRate}% / 年</span>
+          </div>
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">保費金額</span>
+            <span class="policy-detail-value">${formatNTD(parseInt(pol.premium_ntd))}</span>
+          </div>
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">觸發條件</span>
+            <span class="policy-detail-value">逾期 ≥ ${pol.trigger_days} 天</span>
+          </div>
+          <div class="policy-detail-row">
+            <span class="policy-detail-label">到期日</span>
+            <span class="policy-detail-value">${formatDate(pol.end_date)}</span>
+          </div>
+          <div style="margin-top:12px">
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span class="progress-label">剩餘保障期間</span>
+                <span class="progress-value">${daysLeft > 0 ? daysLeft + ' 天' : '即將到期'}</span>
+              </div>
+              <div class="progress-bar" style="margin-top:6px">
+                <div class="progress-fill${daysLeft < 30 ? ' amber' : ''}" style="width:${pct}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="policy-card-footer">
+          <span style="font-size:0.75rem;color:var(--text-muted)">${formatDate(pol.start_date)} 起保</span>
+          <button class="btn btn-outline btn-sm" onclick="showToast('保單詳情：${pol.policy_id}', 'info')">查看詳情</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Claims Table
+  document.getElementById('claims-label').textContent = `共 ${data.claims.length} 筆理賠紀錄`;
+  const tbody = document.getElementById('claims-tbody');
+  tbody.innerHTML = data.claims.map(c => {
+    const company = companyMap[c.insured_company_id] || c.insured_company_id;
+    const shortCompany = company.length > 12 ? company.substring(0,10)+'...' : company;
+    const days = c.processing_days ? `${c.processing_days} 天` : '處理中';
+    const daysStyle = parseInt(c.processing_days) <= 5 ? 'color:var(--success);font-weight:700' : 'color:var(--warning);font-weight:600';
+    return `<tr>
+      <td style="font-family:monospace;font-size:0.8rem;color:var(--text-muted)">${c.claim_id}</td>
+      <td style="font-size:0.8rem">${c.policy_id}</td>
+      <td style="font-size:0.875rem;font-weight:500">${shortCompany}</td>
+      <td style="font-size:0.8rem">${formatDate(c.trigger_date)}</td>
+      <td class="amount">${formatNTD(parseInt(c.claim_amount_ntd))}</td>
+      <td style="${daysStyle}">${days}</td>
+      <td>${getStatusBadge(c.status)}</td>
+      <td style="font-size:0.75rem;color:var(--text-muted);max-width:180px">${c.notes ? c.notes.substring(0,40)+'...' : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Claims Timeline (most recent 4)
+  const recentClaims = data.claims.slice(0, 4);
+  const dotColors = { paid: 'green', approved: 'blue', processing: 'amber' };
+  const statusLabels = { paid: '理賠完成給付', approved: '理賠核准，待撥款', processing: 'AI審核中' };
+  document.getElementById('claims-timeline').innerHTML = recentClaims.map(c => {
+    const color = dotColors[c.status] || 'gray';
+    const label = statusLabels[c.status] || c.status;
+    const company = (companyMap[c.insured_company_id] || c.insured_company_id).substring(0,10);
+    return `<div class="timeline-item">
+      <div class="timeline-dot ${color}">${c.claim_id.replace('CLM','')}</div>
+      <div class="timeline-content">
+        <div class="timeline-title">${label} — ${c.claim_id}</div>
+        <div class="timeline-date">${formatDate(c.trigger_date)} | ${company} | ${formatNTD(parseInt(c.claim_amount_ntd))}</div>
+        <div class="timeline-desc">${c.processing_days ? `已處理 ${c.processing_days} 天` : '正在處理中'} ${c.payment_date ? `| 給付日：${formatDate(c.payment_date)}` : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Expired Policies
+  const expired = data.policies.filter(p => p.status === 'expired' || p.status === 'claimed');
+  document.getElementById('expired-tbody').innerHTML = expired.map(pol => {
+    const buyer = (companyMap[pol.buyer_id] || pol.buyer_id);
+    const shortBuyer = buyer.length > 12 ? buyer.substring(0,10)+'...' : buyer;
+    const inv = invoiceMap[pol.invoice_id];
+    const invoiceNum = inv ? inv.invoice_number : pol.invoice_id;
+    const premiumRate = (parseFloat(pol.premium_rate) * 100).toFixed(1);
+    return `<tr>
+      <td style="font-family:monospace;font-size:0.8rem;color:var(--text-muted)">${pol.policy_id}</td>
+      <td style="font-size:0.875rem">${shortBuyer}</td>
+      <td style="font-family:monospace;font-size:0.8rem">${invoiceNum}</td>
+      <td class="amount" style="font-size:0.875rem">${formatNTD(parseInt(pol.coverage_amount_ntd))}</td>
+      <td style="font-size:0.875rem">${premiumRate}%</td>
+      <td style="font-size:0.8rem;color:var(--text-muted)">${formatDate(pol.end_date)}</td>
+      <td>${getStatusBadge(pol.status)}</td>
+    </tr>`;
+  }).join('');
+});
+</script>
+</body>
+</html>

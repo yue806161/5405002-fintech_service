@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支付管理 | PayGuard 支付保障平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+
+<div class="app-layout">
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <a href="dashboard.html">儀表板</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">支付管理</span>
+        </div>
+        <h1 class="page-title">支付管理</h1>
+        <p class="page-subtitle">追蹤所有收付款紀錄與交易狀態</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="showToast('交易紀錄匯出中...', 'info')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          匯出紀錄
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Stats -->
+    <div class="stat-cards" id="payment-kpis">
+      <div class="stat-card success">
+        <div class="stat-card-header">
+          <span class="stat-label">本月收款金額</span>
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="kpi-monthly">—</div>
+        <div class="stat-sub" id="kpi-monthly-count">計算中...</div>
+        <div class="stat-trend up">↑ 本月已入帳</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-label">本月交易筆數</span>
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="kpi-count">—</div>
+        <div class="stat-sub">包含收款與付款</div>
+        <div class="stat-trend neutral">本月統計</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-label">平均帳期</span>
+          <div class="stat-icon amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">45 <span style="font-size:1rem;color:var(--text-muted)">天</span></div>
+        <div class="stat-sub">較業界平均短 15 天</div>
+        <div class="stat-trend up">↑ 優於同業</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-card-header">
+          <span class="stat-label">逾期率</span>
+          <div class="stat-icon red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">3.2 <span style="font-size:1rem;color:var(--text-muted)">%</span></div>
+        <div class="stat-sub">低於行業均值 18%</div>
+        <div class="stat-trend up">↑ 持續改善中</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid" style="margin-bottom:24px">
+      <!-- Trend Chart -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">近6個月支付趨勢</h3>
+          <div style="display:flex;gap:8px">
+            <span style="display:flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--text-muted)">
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--blue-primary)"></div> 銀行轉帳
+            </span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--text-muted)">
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--purple-accent)"></div> 台灣Pay
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container" style="height:220px">
+            <canvas id="paymentTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Method Breakdown -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">付款方式分佈</h3>
+          <span style="font-size:0.8rem;color:var(--text-muted)" id="method-total">共 — 筆</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:20px">
+            <div class="chart-container" style="height:180px;width:180px;flex-shrink:0">
+              <canvas id="methodChart"></canvas>
+            </div>
+            <div style="flex:1" id="method-legend">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="font-size:0.8rem;color:var(--text-body)">銀行轉帳</span>
+                    <span style="font-size:0.875rem;font-weight:700;color:var(--text-heading)" id="bank-count">—</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" id="bank-bar" style="width:0%"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="font-size:0.8rem;color:var(--text-body)">台灣Pay QR</span>
+                    <span style="font-size:0.875rem;font-weight:700;color:var(--text-heading)" id="qr-count">—</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill purple" id="qr-bar" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:10px;background:var(--bg-page);border-radius:8px;text-align:center">
+                <div style="font-size:0.7rem;color:var(--text-muted)">平均單筆金額</div>
+                <div style="font-size:1.1rem;font-weight:700;color:var(--text-heading)" id="avg-amount">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('receive', this)">收款紀錄</button>
+      <button class="tab-btn" onclick="switchTab('pay', this)">付款紀錄</button>
+      <button class="tab-btn" onclick="switchTab('failed', this)">失敗交易</button>
+    </div>
+
+    <!-- Payment Table -->
+    <div class="card">
+      <div class="filter-bar" style="margin-bottom:0;border:none;border-radius:0;border-bottom:1px solid var(--border);box-shadow:none">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="pay-search" placeholder="搜尋交易編號、對象..." oninput="renderPayTable()">
+        </div>
+        <div class="filter-sep"></div>
+        <div class="filter-group">
+          <label>付款方式</label>
+          <select id="pay-method-filter" onchange="renderPayTable()">
+            <option value="">全部</option>
+            <option value="bank_transfer">銀行轉帳</option>
+            <option value="TWQR">台灣Pay QR</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:none;border-radius:0">
+        <table id="pay-table">
+          <thead>
+            <tr>
+              <th>交易編號</th>
+              <th>日期</th>
+              <th>對象</th>
+              <th>付款方式</th>
+              <th>金額</th>
+              <th>手續費</th>
+              <th>狀態</th>
+            </tr>
+          </thead>
+          <tbody id="pay-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">資料載入中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="pay-pagination"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('payments');
+
+let allPayments = [];
+let companyMap = {};
+let currentTab = 'receive';
+let payPage = 1;
+const PAY_PAGE_SIZE = 10;
+
+document.addEventListener('payguard:dataLoaded', (e) => {
+  const data = e.detail;
+  companyMap = {};
+  data.companies.forEach(c => { companyMap[c.company_id] = c.company_name; });
+  allPayments = data.payments;
+
+  // KPIs
+  const completed = data.payments.filter(p => p.status === 'completed');
+  const monthlyPayments = completed.filter(p => p.payment_date && p.payment_date.startsWith('2026-05'));
+  const monthlyTotal = monthlyPayments.reduce((s, p) => s + parseInt(p.amount_ntd || 0), 0);
+  document.getElementById('kpi-monthly').textContent = formatNTD(monthlyTotal);
+  document.getElementById('kpi-monthly-count').textContent = `本月 ${monthlyPayments.length} 筆已完成`;
+  document.getElementById('kpi-count').textContent = data.payments.length;
+
+  // Method breakdown
+  const bankCount = data.payments.filter(p => p.method === 'bank_transfer' && p.status === 'completed').length;
+  const qrCount = data.payments.filter(p => p.method === 'TWQR' && p.status === 'completed').length;
+  const total = bankCount + qrCount;
+  document.getElementById('method-total').textContent = `共 ${data.payments.length} 筆`;
+  document.getElementById('bank-count').textContent = `${bankCount} 筆`;
+  document.getElementById('qr-count').textContent = `${qrCount} 筆`;
+  document.getElementById('bank-bar').style.width = total ? `${(bankCount/total*100).toFixed(0)}%` : '0%';
+  document.getElementById('qr-bar').style.width = total ? `${(qrCount/total*100).toFixed(0)}%` : '0%';
+
+  const totalAmt = completed.reduce((s, p) => s + parseInt(p.amount_ntd || 0), 0);
+  document.getElementById('avg-amount').textContent = formatNTD(Math.round(totalAmt / (completed.length || 1)));
+
+  renderCharts(data.payments);
+  renderPayTable();
+});
+
+function renderCharts(payments) {
+  const months = ['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04'];
+  const labels = ['2025/11','2025/12','2026/01','2026/02','2026/03','2026/04'];
+
+  const bankData = months.map(m => payments.filter(p => p.method === 'bank_transfer' && p.status === 'completed' && p.payment_date && p.payment_date.startsWith(m)).reduce((s, p) => s + parseInt(p.amount_ntd || 0), 0));
+  const qrData = months.map(m => payments.filter(p => p.method === 'TWQR' && p.status === 'completed' && p.payment_date && p.payment_date.startsWith(m)).reduce((s, p) => s + parseInt(p.amount_ntd || 0), 0));
+
+  new Chart(document.getElementById('paymentTrendChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: '銀行轉帳', data: bankData, backgroundColor: 'rgba(59,91,219,0.75)', borderColor: '#3B5BDB', borderWidth: 2, borderRadius: 4 },
+        { label: '台灣Pay QR', data: qrData, backgroundColor: 'rgba(147,51,234,0.65)', borderColor: '#9333EA', borderWidth: 2, borderRadius: 4 }
+      ]
+    },
+    options: {
+      ...getChartDefaults(),
+      plugins: { ...getChartDefaults().plugins, legend: { display: false } },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 11 } } },
+        y: { stacked: true, grid: { color: 'rgba(226,232,240,0.6)' }, ticks: { callback: v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${(v/1000).toFixed(0)}K`, color: '#94A3B8', font: { size: 11 } } }
+      }
+    }
+  });
+
+  const bankTotal = payments.filter(p => p.method === 'bank_transfer' && p.status === 'completed').length;
+  const qrTotal = payments.filter(p => p.method === 'TWQR' && p.status === 'completed').length;
+  new Chart(document.getElementById('methodChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['銀行轉帳', '台灣Pay QR'],
+      datasets: [{ data: [bankTotal, qrTotal], backgroundColor: ['#3B5BDB', '#9333EA'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { ...getChartDefaults(), cutout: '65%', plugins: { legend: { display: false }, tooltip: { ...getChartDefaults().plugins.tooltip, callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} 筆` } } } }
+  });
+}
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  payPage = 1;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPayTable();
+}
+
+function renderPayTable() {
+  const search = document.getElementById('pay-search').value.toLowerCase();
+  const methodFilter = document.getElementById('pay-method-filter').value;
+
+  let filtered = allPayments.filter(p => {
+    if (currentTab === 'receive' && p.status !== 'completed') return false;
+    if (currentTab === 'failed' && p.status !== 'failed') return false;
+    if (currentTab === 'pay' && (p.status === 'failed' || p.status === 'completed')) return false;
+    if (methodFilter && p.method !== methodFilter) return false;
+    const ref = (p.transaction_ref || '').toLowerCase();
+    const payer = (companyMap[p.payer_id] || p.payer_id || '').toLowerCase();
+    const payee = (companyMap[p.payee_id] || p.payee_id || '').toLowerCase();
+    if (search && !ref.includes(search) && !payer.includes(search) && !payee.includes(search)) return false;
+    return true;
+  });
+
+  const start = (payPage - 1) * PAY_PAGE_SIZE;
+  const page = filtered.slice(start, start + PAY_PAGE_SIZE);
+
+  const tbody = document.getElementById('pay-tbody');
+  if (page.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">無交易紀錄</td></tr>`;
+  } else {
+    tbody.innerHTML = page.map(p => {
+      const counterparty = currentTab === 'receive'
+        ? (companyMap[p.payer_id] || p.payer_id)
+        : (companyMap[p.payee_id] || p.payee_id);
+      const shortName = counterparty.length > 14 ? counterparty.substring(0, 12) + '...' : counterparty;
+      const fee = parseInt(p.fee_ntd) > 0 ? `NT$${parseInt(p.fee_ntd).toLocaleString()}` : '—';
+      return `<tr>
+        <td style="font-family:monospace;font-size:0.75rem;color:var(--text-muted)">${p.transaction_ref}</td>
+        <td style="font-size:0.8rem">${formatDate(p.payment_date)}</td>
+        <td style="font-size:0.875rem;font-weight:500">${shortName}</td>
+        <td>${getMethodBadge(p.method)}</td>
+        <td class="amount">${formatNTD(parseInt(p.amount_ntd))}</td>
+        <td style="font-size:0.8rem;color:var(--text-muted)">${fee}</td>
+        <td>${getStatusBadge(p.status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const paginationWrap = document.getElementById('pay-pagination');
+  paginationWrap.innerHTML = '';
+  if (filtered.length > PAY_PAGE_SIZE) {
+    paginationWrap.appendChild(createPagination(filtered.length, payPage, PAY_PAGE_SIZE, (pg) => {
+      payPage = pg;
+      renderPayTable();
+    }));
+  }
+}
+</script>
+</body>
+</html>
