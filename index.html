@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一頁式網站架構</title>
+    <style>
+        /* 全域重置與平滑捲動設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            /* 啟用 CSS 原生平滑捲動 */
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* 導覽列設定 (固定於頂部) */
+        header {
+            position: sticky;
+            top: 0;
+            background-color: #222;
+            color: #fff;
+            padding: 1rem 0;
+            z-index: 1000;
+        }
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #4CAF50;
+        }
+
+        /* 內容區塊基礎設定 */
+        section {
+            /* 確保每個區塊至少有整個螢幕的高度 */
+            min-height: 100vh;
+            padding: 80px 20px 20px; /* 頂部 padding 用於抵銷固定導覽列的高度 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 區塊背景顏色區分 */
+        #section1 { background-color: #f4f4f4; }
+        #section2 { background-color: #e2e2e2; }
+        #section3 { background-color: #d0d0d0; }
+
+        section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* 頁尾設定 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #222;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 導覽列 -->
+    <header>
+        <nav>
+            <ul>
+                <!-- href 對應區塊的 id -->
+                <li><a href="#section1">區塊一</a></li>
+                <li><a href="#section2">區塊二</a></li>
+                <li><a href="#section3">區塊三</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 網頁內容區塊 -->
+    <section id="section1">
+        <h1>區塊一：介紹</h1>
+        <p>這是網站的第一個區塊內容。</p>
+    </section>
+
+    <section id="section2">
+        <h1>區塊二：詳細資訊</h1>
+        <p>這是網站的第二個區塊內容。</p>
+    </section>
+
+    <section id="section3">
+        <h1>區塊三：聯絡方式</h1>
+        <p>這是網站的第三個區塊內容。</p>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer>
+        <p>&copy; 2026 一頁式網站實作</p>
+    </footer>
+
+</body>
+</html>
