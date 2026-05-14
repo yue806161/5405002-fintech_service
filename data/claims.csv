@@ -1,0 +1,11 @@
+claim_id,policy_id,invoice_id,insured_company_id,trigger_date,claim_amount_ntd,status,processing_days,payment_date,notes
+CLM001,POL001,INV002,SUP001,2026-02-12,1250000,paid,4,2026-02-16,買方逾期超過30天，系統自動觸發理賠，已完成給付
+CLM002,POL003,INV009,SUP001,2026-04-04,680000,paid,3,2026-04-07,買方帳款逾期，自動觸發保單賠付，審核通過
+CLM003,POL005,INV015,SUP004,2026-05-08,2200000,approved,5,,系統審核完成，等待銀行轉帳確認
+CLM004,POL009,INV030,SUP009,2026-04-07,1600000,approved,6,,逾期天數達觸發條件，理賠已核准待撥款
+CLM005,POL011,INV038,SUP004,2026-04-27,1450000,processing,2,,自動觸發中，AI審核資料驗證中
+CLM006,POL013,INV044,SUP003,2026-05-12,340000,processing,1,,新申請，系統正在進行初步審核
+CLM007,POL007,INV026,SUP001,2026-03-21,780000,processing,3,,賠付申請受理，文件審查中
+CLM008,POL015,INV049,SUP004,2026-05-24,1900000,approved,4,,信用評分與逾期資料核對完成，理賠核准
+CLM009,POL002,INV003,SUP002,2026-02-28,890000,paid,5,2026-03-04,全額理賠完成，已匯入投保公司帳戶
+CLM010,POL006,INV022,SUP003,2026-03-15,1350000,approved,7,,理賠金額確認，待最終撥款

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>儀表板 | PayGuard 支付保障平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+
+<div class="app-layout">
+  <div class="main-content">
+    <!-- Welcome Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <span>PayGuard</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">儀表板</span>
+        </div>
+        <h1 class="page-title" id="welcome-msg">早安，陳小明 👋</h1>
+        <p class="page-subtitle" id="today-date">載入中...</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="showToast('資料已刷新', 'success')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,11 16,11"/><polyline points="1,20 1,13 8,13"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 11M1 13l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          刷新
+        </button>
+        <a href="invoices.html" class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          上傳發票
+        </a>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="stat-cards" id="kpi-cards">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-label">待收帳款</span>
+          <div class="stat-icon amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">NT$2,380,000</div>
+        <div class="stat-sub">共 3 筆待收發票</div>
+        <div class="stat-trend up">↑ 本月新增 2 筆</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-card-header">
+          <span class="stat-label">已保障金額</span>
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">NT$1,830,000</div>
+        <div class="stat-sub">2 張保單生效中</div>
+        <div class="stat-trend up">↑ 覆蓋率 76.9%</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-card-header">
+          <span class="stat-label">信用評分</span>
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">87 <span style="font-size:1rem;color:var(--text-muted)">/100</span></div>
+        <div class="stat-sub"><span class="badge" style="background:rgba(16,185,129,0.1);color:var(--success)">A 級</span></div>
+        <div class="stat-trend up">↑ 較上月 +2 分</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-label">可申請融資</span>
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12,2 20,7 4,7"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">NT$5,000,000</div>
+        <div class="stat-sub">已媒合 3 家銀行方案</div>
+        <div class="stat-trend neutral">年利率低至 2.85%</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">近6個月收款趨勢</h3>
+          <span class="badge" style="background:rgba(16,185,129,0.1);color:var(--success)">已付款</span>
+        </div>
+        <div class="card-body">
+          <div class="chart-container" style="height:220px">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">發票狀態分佈</h3>
+          <span style="font-size:0.8rem;color:var(--text-muted)">共 50 筆</span>
+        </div>
+        <div class="card-body" style="display:flex;align-items:center;gap:24px">
+          <div class="chart-container" style="height:200px;width:200px;flex-shrink:0">
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div style="flex:1">
+            <div id="chart-legend" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Grid -->
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+
+      <!-- Recent Invoices -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">最近發票</h3>
+          <a href="invoices.html" class="btn btn-ghost btn-sm">查看全部 →</a>
+        </div>
+        <div class="table-wrap" style="border:none;border-radius:0">
+          <table>
+            <thead>
+              <tr>
+                <th>發票號碼</th>
+                <th>買方</th>
+                <th>到期日</th>
+                <th>金額</th>
+                <th>狀態</th>
+              </tr>
+            </thead>
+            <tbody id="recent-invoices-body">
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">資料載入中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Insurance Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">保險動態</h3>
+            <a href="insurance.html" class="btn btn-ghost btn-sm">詳情</a>
+          </div>
+          <div class="card-body" style="padding:16px">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--danger);flex-shrink:0;margin-top:5px"></div>
+                <div>
+                  <div style="font-size:0.8rem;font-weight:600;color:var(--text-heading)">理賠觸發</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted)">INV002 逾期42天，自動觸發</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">2026/01/20</div>
+                </div>
+                <span class="badge badge-paid" style="margin-left:auto;font-size:0.65rem">已給付</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;margin-top:5px"></div>
+                <div>
+                  <div style="font-size:0.8rem;font-weight:600;color:var(--text-heading)">新保單生效</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted)">INV013 保障 NT$1,100,000</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">2026/02/25</div>
+                </div>
+                <span class="badge badge-active" style="margin-left:auto;font-size:0.65rem">生效中</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--warning);flex-shrink:0;margin-top:5px"></div>
+                <div>
+                  <div style="font-size:0.8rem;font-weight:600;color:var(--text-heading)">理賠處理中</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted)">INV009 逾期71天審核中</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">2026/04/04</div>
+                </div>
+                <span class="badge badge-processing" style="margin-left:auto;font-size:0.65rem">處理中</span>
+              </div>
+            </div>
+            <!-- Highlight -->
+            <div style="margin-top:14px;padding:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,91,219,0.04));border:1px solid rgba(16,185,129,0.15);border-radius:8px;text-align:center">
+              <div style="font-size:0.7rem;color:var(--text-muted)">理賠觸發後平均完成時間</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--success)">3.5 天</div>
+              <div style="font-size:0.65rem;color:var(--text-muted)">vs 傳統保險 90天+</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">快速操作</h3>
+          </div>
+          <div class="card-body" style="padding:14px">
+            <div class="quick-actions">
+              <a href="invoices.html" class="quick-action-btn" style="flex:1">
+                <div class="qa-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                </div>
+                <span class="qa-label">上傳發票</span>
+              </a>
+              <a href="insurance.html" class="quick-action-btn" style="flex:1">
+                <div class="qa-icon" style="background:var(--success)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <span class="qa-label">申請保險</span>
+              </a>
+              <a href="financing.html" class="quick-action-btn" style="flex:1">
+                <div class="qa-icon" style="background:var(--purple-accent)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12,2 20,7 4,7"/></svg>
+                </div>
+                <span class="qa-label">申請融資</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script>
+// Mount sidebar
+document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('dashboard');
+
+// Set greeting and date
+(function() {
+  const now = new Date('2026-05-15');
+  const hour = 9; // Morning
+  const greetings = ['深夜好', '早安', '早安', '上午好', '午安', '下午好', '晚安'];
+  const greetingIdx = hour < 6 ? 0 : hour < 10 ? 1 : hour < 12 ? 3 : hour < 14 ? 4 : hour < 18 ? 5 : 6;
+  document.getElementById('welcome-msg').textContent = `早安，陳小明 👋`;
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('today-date').textContent = `2026年5月15日（星期五）| 台灣精密零件有限公司`;
+})();
+
+// Load data and render
+document.addEventListener('payguard:dataLoaded', (e) => {
+  const data = e.detail;
+  renderRecentInvoices(data);
+  renderCharts(data);
+});
+
+function renderRecentInvoices(data) {
+  const sup001Invoices = data.invoices
+    .filter(inv => inv.seller_id === 'SUP001')
+    .slice(-5)
+    .reverse();
+
+  const buyerMap = {};
+  data.companies.forEach(c => { buyerMap[c.company_id] = c.company_name; });
+
+  const tbody = document.getElementById('recent-invoices-body');
+  if (sup001Invoices.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">暫無發票資料</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sup001Invoices.map(inv => {
+    const buyerName = buyerMap[inv.buyer_id] || inv.buyer_id;
+    const shortName = buyerName.length > 12 ? buyerName.substring(0, 10) + '...' : buyerName;
+    const dueDate = formatDate(inv.due_date);
+    const amount = formatNTD(parseInt(inv.amount_ntd));
+    const isOverdue = inv.status === 'overdue';
+    const dueDateStyle = isOverdue ? 'color:var(--danger);font-weight:600' : '';
+
+    return `<tr>
+      <td class="invoice-num">${inv.invoice_number}</td>
+      <td style="font-size:0.8rem">${shortName}</td>
+      <td style="font-size:0.8rem;${dueDateStyle}">${dueDate}${isOverdue ? ' ⚠️' : ''}</td>
+      <td class="amount" style="font-size:0.875rem">${amount}</td>
+      <td>${getStatusBadge(inv.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCharts(data) {
+  // Revenue trend (last 6 months for SUP001)
+  const months = ['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04'];
+  const monthLabels = ['2025/11','2025/12','2026/01','2026/02','2026/03','2026/04'];
+  const monthlyRevenue = months.map(month => {
+    return data.invoices
+      .filter(inv => inv.seller_id === 'SUP001' && inv.status === 'paid' && inv.payment_date && inv.payment_date.startsWith(month))
+      .reduce((sum, inv) => sum + parseInt(inv.amount_ntd || 0), 0);
+  });
+
+  const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+  new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: '收款金額 (NT$)',
+        data: monthlyRevenue,
+        backgroundColor: [
+          'rgba(59,91,219,0.75)',
+          'rgba(59,91,219,0.75)',
+          'rgba(59,91,219,0.75)',
+          'rgba(59,91,219,0.75)',
+          'rgba(59,91,219,0.75)',
+          'rgba(67,97,238,0.9)'
+        ],
+        borderColor: ['#3B5BDB','#3B5BDB','#3B5BDB','#3B5BDB','#3B5BDB','#4361EE'],
+        borderWidth: 2,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      ...getChartDefaults(),
+      plugins: {
+        ...getChartDefaults().plugins,
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(226,232,240,0.6)' },
+          ticks: {
+            callback: v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${(v/1000).toFixed(0)}K`,
+            color: '#94A3B8',
+            font: { size: 11 }
+          }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94A3B8', font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // Status distribution
+  const statusCounts = { paid: 0, pending: 0, overdue: 0, insured: 0 };
+  data.invoices.forEach(inv => {
+    if (statusCounts.hasOwnProperty(inv.status)) statusCounts[inv.status]++;
+  });
+
+  const statusCtx = document.getElementById('statusChart').getContext('2d');
+  new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['已付款', '待付款', '逾期', '已投保'],
+      datasets: [{
+        data: [statusCounts.paid, statusCounts.pending, statusCounts.overdue, statusCounts.insured],
+        backgroundColor: ['#10B981','#F59E0B','#EF4444','#3B5BDB'],
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      ...getChartDefaults(),
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...getChartDefaults().plugins.tooltip,
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.raw} 筆`
+          }
+        }
+      }
+    }
+  });
+
+  // Custom legend
+  const legendEl = document.getElementById('chart-legend');
+  const legendItems = [
+    { label: '已付款', count: statusCounts.paid, color: '#10B981' },
+    { label: '待付款', count: statusCounts.pending, color: '#F59E0B' },
+    { label: '逾期', count: statusCounts.overdue, color: '#EF4444' },
+    { label: '已投保', count: statusCounts.insured, color: '#3B5BDB' }
+  ];
+  legendEl.innerHTML = legendItems.map(item => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:12px;height:12px;border-radius:3px;background:${item.color};flex-shrink:0"></div>
+        <span style="font-size:0.8rem;color:var(--text-body)">${item.label}</span>
+      </div>
+      <span style="font-size:0.875rem;font-weight:700;color:var(--text-heading)">${item.count} 筆</span>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>

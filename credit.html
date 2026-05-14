@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信用評分 | PayGuard 支付保障平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* SVG Semicircle Gauge */
+    .gauge-svg-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+      width: 220px;
+    }
+    .gauge-svg {
+      width: 220px;
+      height: 120px;
+      display: block;
+    }
+    .gauge-track {
+      fill: none;
+      stroke: #E5E7EB;
+      stroke-width: 16;
+      stroke-linecap: round;
+    }
+    .gauge-segment {
+      fill: none;
+      stroke-width: 16;
+      stroke-linecap: round;
+    }
+    .gauge-segment.red { stroke: #EF4444; }
+    .gauge-segment.orange { stroke: #F59E0B; }
+    .gauge-segment.green { stroke: #10B981; }
+    #gauge-needle {
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: 0 0;
+    }
+    .gauge-needle-line {
+      stroke: var(--text-heading);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .gauge-pin {
+      fill: var(--text-heading);
+      stroke: white;
+      stroke-width: 3;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    }
+    .gauge-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 220px;
+      margin: 0 auto;
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+    .gauge-label-item { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+    .score-ring {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue-primary) calc(87% * 1deg * 360 / 100), var(--bg-page) 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+
+<div class="app-layout">
+  <div class="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <a href="dashboard.html">儀表板</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">信用評分</span>
+        </div>
+        <h1 class="page-title">信用評分</h1>
+        <p class="page-subtitle">基於AI的綜合信用評分分析，反映您的付款信用與交易健康度</p>
+      </div>
+      <div class="page-header-actions">
+        <div style="text-align:right">
+          <div style="font-size:0.75rem;color:var(--text-muted)">評分更新於</div>
+          <div style="font-size:0.875rem;font-weight:600;color:var(--text-heading)">2026/05/10</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">下次更新 2026/05/17</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Score + Breakdown Grid -->
+    <div style="display:grid;grid-template-columns:340px 1fr;gap:20px;margin-bottom:24px">
+
+      <!-- Score Card -->
+      <div class="card" style="text-align:center">
+        <div class="card-header" style="justify-content:center;border-bottom:none;padding-bottom:0">
+          <h3 class="card-title">您的信用評分</h3>
+        </div>
+        <div class="card-body" style="padding-top:12px">
+          <div class="gauge-svg-wrap">
+            <svg class="gauge-svg" viewBox="0 0 220 120" aria-hidden="true">
+              <path class="gauge-track" d="M 20 110 A 90 90 0 0 1 200 110" />
+              <path class="gauge-segment red" d="M 20 110 A 90 90 0 0 1 65 32" />
+              <path class="gauge-segment orange" d="M 65 32 A 90 90 0 0 1 155 32" />
+              <path class="gauge-segment green" d="M 155 32 A 90 90 0 0 1 200 110" />
+              <g id="gauge-needle" transform="translate(110 110) rotate(-90)">
+                <line class="gauge-needle-line" x1="0" y1="0" x2="0" y2="-86" />
+              </g>
+              <circle class="gauge-pin" cx="110" cy="110" r="8" />
+            </svg>
+          </div>
+          <div class="gauge-labels">
+            <span class="gauge-label-item" style="color:#EF4444">差</span>
+            <span class="gauge-label-item" style="color:#F59E0B">普通</span>
+            <span class="gauge-label-item" style="color:#10B981">優良</span>
+          </div>
+
+          <!-- Score Display -->
+          <div style="margin-top:16px">
+            <div style="font-size:3.5rem;font-weight:800;color:var(--text-heading);line-height:1">87</div>
+            <div style="font-size:1rem;color:var(--text-muted);margin-top:2px">/ 100</div>
+          </div>
+          <div style="margin-top:12px;display:flex;justify-content:center;gap:8px;align-items:center">
+            <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--success);font-size:0.9rem;padding:5px 14px">A 級</span>
+            <span style="display:flex;align-items:center;gap:3px;font-size:0.8rem;color:var(--success);font-weight:600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg>
+              +2 上升中
+            </span>
+          </div>
+
+          <!-- Score Range Bar -->
+          <div style="margin-top:20px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:0.7rem;color:var(--text-muted)">0</span>
+              <span style="font-size:0.7rem;color:var(--text-muted)">100</span>
+            </div>
+            <div style="position:relative;height:10px;background:linear-gradient(90deg,#EF4444 0%,#F59E0B 40%,#FBBF24 60%,#34D399 80%,#10B981 100%);border-radius:5px">
+              <div style="position:absolute;top:-4px;left:calc(87% - 9px);width:18px;height:18px;background:var(--text-heading);border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2)"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px">
+              <span style="font-size:0.65rem;color:#EF4444;font-weight:600">C-</span>
+              <span style="font-size:0.65rem;color:#F59E0B;font-weight:600">B</span>
+              <span style="font-size:0.65rem;color:#10B981;font-weight:600">A+</span>
+            </div>
+          </div>
+
+          <!-- Peer Comparison -->
+          <div style="margin-top:16px;padding:12px;background:rgba(59,91,219,0.05);border:1px solid rgba(59,91,219,0.12);border-radius:var(--radius-sm)">
+            <div style="font-size:0.75rem;color:var(--text-muted)">同業排名</div>
+            <div style="font-size:1.1rem;font-weight:700;color:var(--blue-primary);margin-top:2px">高於 73% 的企業</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">製造業 • 新竹市</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Score Breakdown -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">評分細項分析</h3>
+            <span style="font-size:0.8rem;color:var(--text-muted)">共 4 項指標</span>
+          </div>
+          <div class="card-body">
+            <div class="score-breakdown">
+              <div class="progress-wrap">
+                <div class="progress-header">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>
+                    <span class="progress-label" style="color:var(--text-body);font-weight:500">付款準時率</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="progress-value">92 / 100</span>
+                    <span style="font-size:0.7rem;color:var(--success);background:var(--success-bg);padding:2px 6px;border-radius:10px;font-weight:600">優秀</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill green" style="width:92%"></div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">過去12個月，92%的應付帳款按時付清，無嚴重逾期紀錄</div>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-header">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--blue-primary)"></div>
+                    <span class="progress-label" style="color:var(--text-body);font-weight:500">發票成交量</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="progress-value">78 / 100</span>
+                    <span style="font-size:0.7rem;color:var(--blue-primary);background:rgba(59,91,219,0.08);padding:2px 6px;border-radius:10px;font-weight:600">良好</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:78%"></div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">年度交易量 127 筆，總金額 NT$5,842萬，成長趨勢穩定</div>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-header">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>
+                    <span class="progress-label" style="color:var(--text-body);font-weight:500">逾期比率控制</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="progress-value">85 / 100</span>
+                    <span style="font-size:0.7rem;color:var(--success);background:var(--success-bg);padding:2px 6px;border-radius:10px;font-weight:600">優秀</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill green" style="width:85%"></div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">逾期率僅 3.2%，遠低於製造業平均 18%，風控能力優秀</div>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-header">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--purple-accent)"></div>
+                    <span class="progress-label" style="color:var(--text-body);font-weight:500">交易穩定性</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="progress-value">91 / 100</span>
+                    <span style="font-size:0.7rem;color:var(--purple-accent);background:rgba(147,51,234,0.08);padding:2px 6px;border-radius:10px;font-weight:600">優秀</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill purple" style="width:91%"></div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">與 BUY001、BUY002 等A+買方長期合作，交易關係穩定可靠</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--text-heading)">127</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">年度交易筆數</div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--text-heading)">45天</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">平均付款天數</div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--success)">3.2%</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">逾期比率</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Score History Chart -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <h3 class="card-title">信用評分歷史趨勢</h3>
+        <div style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--success)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg>
+          近12個月持續上升
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:220px">
+          <canvas id="scoreHistoryChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+      <!-- Improvement Tips -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">提分建議</h3>
+          <span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning)">3 項建議</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.12);border-radius:var(--radius-md)">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <div>
+              <div style="font-size:0.875rem;font-weight:700;color:var(--text-heading);margin-bottom:3px">提高發票成交量</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.5">增加與現有買方的交易頻率，或拓展新買方，可提升「發票成交量」評分，預計可提升 4–6 分。</div>
+              <div style="margin-top:6px;font-size:0.75rem;color:var(--success);font-weight:600">預計提升：+4–6分</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(59,91,219,0.04);border:1px solid rgba(59,91,219,0.12);border-radius:var(--radius-md)">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(59,91,219,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            </div>
+            <div>
+              <div style="font-size:0.875rem;font-weight:700;color:var(--text-heading);margin-bottom:3px">縮短帳期天數</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.5">目前平均帳期45天，若能協商縮短至35天以下，可進一步提升付款準時率與整體評分。</div>
+              <div style="margin-top:6px;font-size:0.75rem;color:var(--blue-primary);font-weight:600">預計提升：+2–3分</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(147,51,234,0.04);border:1px solid rgba(147,51,234,0.12);border-radius:var(--radius-md)">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(147,51,234,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple-accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:0.875rem;font-weight:700;color:var(--text-heading);margin-bottom:3px">為高風險發票投保</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.5">為逾期風險較高的發票投保，降低整體逾期損失，系統將調整風險係數，提升評分。</div>
+              <div style="margin-top:6px;font-size:0.75rem;color:var(--purple-accent);font-weight:600">預計提升：+1–2分</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buyer Credit Comparison -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">主要買方信用概況</h3>
+          <span style="font-size:0.8rem;color:var(--text-muted)">依交易金額排序</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>買方</th>
+                <th>信用評分</th>
+                <th>評級</th>
+                <th>趨勢</th>
+              </tr>
+            </thead>
+            <tbody id="buyer-credit-tbody">
+              <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted)">載入中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('credit');
+
+// Animate gauge needle on load
+setTimeout(() => {
+  // Score 87 → angle: -90deg (left) to +90deg (right)
+  const score = 87;
+  const angleDeg = -90 + (score / 100 * 180);
+  const needle = document.getElementById('gauge-needle');
+  needle.setAttribute('transform', `translate(110 110) rotate(${angleDeg})`);
+}, 400);
+
+// Score history data (last 12 months)
+const scoreHistory = [80, 81, 81, 82, 83, 83, 84, 85, 85, 86, 86, 87];
+const monthLabels = ['2025/06','2025/07','2025/08','2025/09','2025/10','2025/11','2025/12','2026/01','2026/02','2026/03','2026/04','2026/05'];
+
+new Chart(document.getElementById('scoreHistoryChart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: monthLabels,
+    datasets: [{
+      label: '信用評分',
+      data: scoreHistory,
+      borderColor: '#3B5BDB',
+      backgroundColor: 'rgba(59,91,219,0.08)',
+      borderWidth: 3,
+      pointBackgroundColor: '#3B5BDB',
+      pointBorderColor: 'white',
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    ...getChartDefaults(),
+    plugins: {
+      ...getChartDefaults().plugins,
+      legend: { display: false },
+      tooltip: {
+        ...getChartDefaults().plugins.tooltip,
+        callbacks: { label: ctx => ` 信用評分：${ctx.raw} 分` }
+      }
+    },
+    scales: {
+      y: {
+        min: 75,
+        max: 100,
+        grid: { color: 'rgba(226,232,240,0.6)' },
+        ticks: { color: '#94A3B8', font: { size: 11 }, stepSize: 5 }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#94A3B8', font: { size: 10 } }
+      }
+    }
+  }
+});
+
+// Buyer credit table
+document.addEventListener('payguard:dataLoaded', (e) => {
+  const data = e.detail;
+  const buyers = ['BUY001','BUY002','BUY003','BUY006','BUY007'];
+  const companyMap = {};
+  data.companies.forEach(c => { companyMap[c.company_id] = c; });
+  const scoreMap = {};
+  data.creditScores.forEach(s => { scoreMap[s.company_id] = s; });
+
+  const tbody = document.getElementById('buyer-credit-tbody');
+  tbody.innerHTML = buyers.map(id => {
+    const c = companyMap[id];
+    const s = scoreMap[id];
+    if (!c || !s) return '';
+    const shortName = c.company_name.length > 12 ? c.company_name.substring(0,10)+'...' : c.company_name;
+    const score = parseInt(s.credit_score);
+    const barColor = score >= 90 ? '#10B981' : score >= 80 ? '#3B5BDB' : '#F59E0B';
+    const trendIcon = s.trend === 'up'
+      ? `<span style="color:var(--success)">↑</span>`
+      : s.trend === 'down'
+      ? `<span style="color:var(--danger)">↓</span>`
+      : `<span style="color:var(--text-muted)">→</span>`;
+    return `<tr>
+      <td style="font-size:0.8rem;font-weight:500">${shortName}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:6px;background:var(--bg-page);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${score}%;background:${barColor};border-radius:3px"></div>
+          </div>
+          <span style="font-size:0.8rem;font-weight:700;color:var(--text-heading);min-width:24px">${score}</span>
+        </div>
+      </td>
+      <td><span class="badge" style="background:rgba(16,185,129,0.1);color:var(--success);font-size:0.75rem">${s.credit_grade}</span></td>
+      <td>${trendIcon}</td>
+    </tr>`;
+  }).join('');
+});
+</script>
+</body>
+</html>

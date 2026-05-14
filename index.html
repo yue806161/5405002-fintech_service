@@ -1,117 +1,428 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一頁式網站架構</title>
-    <style>
-        /* 全域重置與平滑捲動設定 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html {
-            /* 啟用 CSS 原生平滑捲動 */
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        /* 導覽列設定 (固定於頂部) */
-        header {
-            position: sticky;
-            top: 0;
-            background-color: #222;
-            color: #fff;
-            padding: 1rem 0;
-            z-index: 1000;
-        }
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-        }
-        nav ul li {
-            margin: 0 15px;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        nav ul li a:hover {
-            color: #4CAF50;
-        }
-
-        /* 內容區塊基礎設定 */
-        section {
-            /* 確保每個區塊至少有整個螢幕的高度 */
-            min-height: 100vh;
-            padding: 80px 20px 20px; /* 頂部 padding 用於抵銷固定導覽列的高度 */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 區塊背景顏色區分 */
-        #section1 { background-color: #f4f4f4; }
-        #section2 { background-color: #e2e2e2; }
-        #section3 { background-color: #d0d0d0; }
-
-        section h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        /* 頁尾設定 */
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #222;
-            color: #fff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayGuard 支付保障平台 | 讓每張發票都有保障</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="landing-body" data-requires-data="false">
 
-    <!-- 導覽列 -->
-    <header>
-        <nav>
-            <ul>
-                <!-- href 對應區塊的 id -->
-                <li><a href="#section1">區塊一</a></li>
-                <li><a href="#section2">區塊二</a></li>
-                <li><a href="#section3">區塊三</a></li>
-            </ul>
-        </nav>
-    </header>
+<!-- Navigation -->
+<nav class="landing-nav">
+  <div class="landing-nav-inner">
+    <a href="index.html" class="nav-logo" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#EEF2FF"/>
+        <path d="M20 6L8 12v8c0 7 5.5 13.5 12 15.5C27.5 33.5 33 27 33 20v-8L20 6z" fill="#3B5BDB" opacity="0.9"/>
+        <path d="M20 10L11 15v7c0 5.5 4 10 9 12 5-2 9-6.5 9-12v-7L20 10z" fill="#1E2A5E"/>
+        <path d="M16 20l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--text-heading)">PayGuard</div>
+        <div style="font-size:0.65rem;color:var(--text-muted)">支付保障平台</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#pain">痛點</a>
+      <a href="#solution">解決方案</a>
+      <a href="#how">如何運作</a>
+      <a href="#testimonials">客戶評價</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <a href="dashboard.html" class="btn btn-outline" style="padding:7px 18px">登入</a>
+      <a href="dashboard.html" class="btn btn-primary" style="padding:7px 18px">免費試用</a>
+    </div>
+  </div>
+</nav>
 
-    <!-- 網頁內容區塊 -->
-    <section id="section1">
-        <h1>區塊一：介紹</h1>
-        <p>這是網站的第一個區塊內容。</p>
-    </section>
+<!-- Hero Section -->
+<section class="landing-hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      AI 驅動的 B2B 支付保障生態系
+    </div>
+    <h1 class="hero-title">讓每張發票<br>都有<span>保障</span></h1>
+    <p class="hero-subtitle">PayGuard 整合電子發票、參數型保險與融資媒合，<br>協助台灣中小企業告別帳款逾期困境，保障每一筆應收帳款安全到帳。</p>
+    <div class="hero-cta">
+      <a href="dashboard.html" class="btn btn-lg" style="background:white;color:var(--blue-primary);border:2px solid white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        開始免費試用
+      </a>
+      <a href="#solution" class="btn btn-lg btn-outline-white">
+        了解更多
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </a>
+    </div>
+  </div>
 
-    <section id="section2">
-        <h1>區塊二：詳細資訊</h1>
-        <p>這是網站的第二個區塊內容。</p>
-    </section>
+  <!-- Hero Dashboard Preview -->
+  <div style="margin-top:56px;max-width:800px;margin-left:auto;margin-right:auto">
+    <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px">
+      <div style="display:flex;gap:6px;margin-bottom:18px">
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(239,68,68,0.7)"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(245,158,11,0.7)"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(16,185,129,0.7)"></div>
+        <span style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-left:8px">PayGuard 儀表板 — 台灣精密零件有限公司</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:1.3rem;font-weight:800;color:white">NT$238萬</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px">待收帳款</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px">3 筆發票</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.18);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:1.3rem;font-weight:800;color:#34D399">NT$183萬</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px">已保障金額</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px">2 張保單生效中</div>
+        </div>
+        <div style="background:rgba(147,51,234,0.18);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:1.3rem;font-weight:800;color:#C4B5FD">87/100</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px">信用評分</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px">A 級 ↑ 上升中</div>
+        </div>
+        <div style="background:rgba(59,91,219,0.25);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:1.3rem;font-weight:800;color:white">NT$500萬</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px">可申請融資</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px">年利率低至 2.85%</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:rgba(0,0,0,0.15);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0"></span>
+        <span style="font-size:0.75rem;color:rgba(255,255,255,0.6)">發票 E-2025-002 已逾期 42 天 — 已自動觸發理賠</span>
+        <span style="margin-left:auto;background:rgba(16,185,129,0.2);color:#34D399;font-size:0.7rem;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap">✓ 3天完成給付</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section id="section3">
-        <h1>區塊三：聯絡方式</h1>
-        <p>這是網站的第三個區塊內容。</p>
-    </section>
+<!-- Stats Bar -->
+<section class="stats-bar">
+  <div class="stats-bar-inner">
+    <div class="stat-bar-item">
+      <div class="stat-bar-value">171萬+</div>
+      <div class="stat-bar-label">台灣中小企業受惠對象</div>
+    </div>
+    <div class="stat-bar-item">
+      <div class="stat-bar-value">60天</div>
+      <div class="stat-bar-label">平均B2B應收帳期</div>
+    </div>
+    <div class="stat-bar-item">
+      <div class="stat-bar-value">3–5天</div>
+      <div class="stat-bar-label">理賠完成時間（傳統90天+）</div>
+    </div>
+    <div class="stat-bar-item">
+      <div class="stat-bar-value">0.3–1.2%</div>
+      <div class="stat-bar-label">年化保費費率</div>
+    </div>
+  </div>
+</section>
 
-    <!-- 頁尾 -->
-    <footer>
-        <p>&copy; 2026 一頁式網站實作</p>
-    </footer>
+<!-- Pain Points -->
+<section class="landing-section" id="pain">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="section-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        中小企業的三大困境
+      </div>
+      <h2 class="section-title">每年數兆的應收帳款<br>無人保障</h2>
+      <p class="section-desc" style="margin:0 auto 0">台灣中小企業長期面對帳期壓力、理賠困難與驗證成本高的問題，是整個供應鏈中最脆弱的一環。</p>
+    </div>
+    <div class="pain-cards">
+      <div class="pain-card">
+        <div class="pain-icon red">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h3 style="color:#EF4444">逾期問題嚴重</h3>
+        <p>台灣B2B交易逾期率高達18–25%，中小企業平均帳期長達60–90天，一旦大客戶拖款，現金流立刻斷鏈。</p>
+        <div style="margin-top:16px;padding:10px 12px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.1);border-radius:8px;font-size:0.8rem;color:var(--text-muted)">
+          每年因應收帳款損失超過 <strong style="color:#EF4444">NT$3,000億</strong>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon amber">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        </div>
+        <h3 style="color:#F59E0B">理賠曠日廢時</h3>
+        <p>傳統信用保險理賠流程繁瑣，平均需要90天以上才能完成審核，企業在等待期間資金缺口持續擴大。</p>
+        <div style="margin-top:16px;padding:10px 12px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.1);border-radius:8px;font-size:0.8rem;color:var(--text-muted)">
+          傳統理賠平均需 <strong style="color:#F59E0B">90天以上</strong> 才能完成給付
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon purple">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9333EA" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3 style="color:#9333EA">驗證成本高昂</h3>
+        <p>缺乏統一的信用評分體系，中小企業難以取得客觀的買方信用資料，授信風控全靠人工，效率低且錯誤率高。</p>
+        <div style="margin-top:16px;padding:10px 12px;background:rgba(147,51,234,0.05);border:1px solid rgba(147,51,234,0.1);border-radius:8px;font-size:0.8rem;color:var(--text-muted)">
+          人工信用審核平均耗費 <strong style="color:#9333EA">2–4週</strong> 且準確度不足
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- Solution - 3 Layer Architecture -->
+<section class="landing-section alt" id="solution">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="section-tag" style="background:rgba(59,91,219,0.08);color:var(--blue-primary)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        三層保障架構
+      </div>
+      <h2 class="section-title">全方位的支付保障生態系</h2>
+      <p class="section-desc" style="margin:0 auto">從基礎支付設施到融資媒合，PayGuard 三層架構全面守護中小企業每一筆應收帳款。</p>
+    </div>
+
+    <div class="pyramid-section">
+      <!-- Pyramid Visual -->
+      <div class="pyramid-visual">
+        <div class="pyramid-layer l3" style="text-align:center">
+          <div style="font-size:0.65rem;opacity:0.7;margin-bottom:2px">第三層</div>
+          <div>融資媒合</div>
+        </div>
+        <div style="width:65%;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid rgba(147,51,234,0.25)"></div>
+        <div class="pyramid-layer l2" style="text-align:center">
+          <div style="font-size:0.65rem;opacity:0.7;margin-bottom:2px">第二層</div>
+          <div>參數型支付保險</div>
+        </div>
+        <div style="width:85%;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid rgba(59,91,219,0.25)"></div>
+        <div class="pyramid-layer l1" style="text-align:center">
+          <div style="font-size:0.65rem;opacity:0.7;margin-bottom:2px">第一層</div>
+          <div>B2B 支付基礎設施</div>
+        </div>
+        <div style="margin-top:12px;text-align:center">
+          <span style="font-size:0.7rem;color:var(--text-muted)">由下至上逐層保障</span>
+        </div>
+      </div>
+
+      <!-- Solution Cards -->
+      <div class="solution-cards">
+        <div class="solution-card">
+          <div class="solution-num blue">1</div>
+          <div>
+            <h4>B2B 支付基礎設施</h4>
+            <p>整合財政部電子發票（B2B e-Invoice）、帳期管理、交易對帳，建立完整數位支付憑證鏈，確保每筆交易有據可查。</p>
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(59,91,219,0.08);color:var(--blue-primary);border-radius:20px;font-weight:600">電子發票整合</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(59,91,219,0.08);color:var(--blue-primary);border-radius:20px;font-weight:600">帳期管理</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(59,91,219,0.08);color:var(--blue-primary);border-radius:20px;font-weight:600">台灣Pay整合</span>
+            </div>
+          </div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-num indigo">2</div>
+          <div>
+            <h4>AI 參數型支付保險</h4>
+            <p>基於AI信用風險評分的自動核保，觸發條件明確（逾期≥30天即理賠），理賠時間從90天縮短至3–5天，保費費率0.3–1.2%。</p>
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(67,97,238,0.08);color:var(--blue-card);border-radius:20px;font-weight:600">AI 自動核保</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(67,97,238,0.08);color:var(--blue-card);border-radius:20px;font-weight:600">參數觸發理賠</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(67,97,238,0.08);color:var(--blue-card);border-radius:20px;font-weight:600">應收帳款保護</span>
+            </div>
+          </div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-num purple">3</div>
+          <div>
+            <h4>融資媒合服務</h4>
+            <p>依據信用評分自動媒合最適銀行融資方案，供應商融資、應收帳款融資一站完成，平台採媒合費模式不承擔信用風險。</p>
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(147,51,234,0.08);color:var(--purple-accent);border-radius:20px;font-weight:600">供應商融資</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(147,51,234,0.08);color:var(--purple-accent);border-radius:20px;font-weight:600">銀行智能媒合</span>
+              <span style="font-size:0.7rem;padding:2px 8px;background:rgba(147,51,234,0.08);color:var(--purple-accent);border-radius:20px;font-weight:600">輕資產申請</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it Works -->
+<section class="landing-section" id="how">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="section-tag" style="background:rgba(16,185,129,0.08);color:var(--success)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+        簡單五步驟
+      </div>
+      <h2 class="section-title">如何開始保障您的帳款？</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-label">上傳發票</div>
+        <div class="step-desc">匯入電子發票或手動上傳，系統自動解析發票資訊與買方資料</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-label">AI 信用評分</div>
+        <div class="step-desc">系統即時評估買方信用評分（A+ 到 B-），提供風險等級建議</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-label">一鍵投保</div>
+        <div class="step-desc">選擇需保障的發票，線上完成投保申請，保費自動計算透明呈現</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-label">自動監控</div>
+        <div class="step-desc">系統全天候監控帳款狀態，逾期即時通知並自動觸發理賠流程</div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-label">快速理賠</div>
+        <div class="step-desc">符合觸發條件後，3–5天內完成理賠給付，資金無縫銜接不中斷</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="landing-section alt" id="testimonials">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="section-tag" style="background:rgba(245,158,11,0.08);color:var(--warning)">
+        ⭐ 客戶真實評價
+      </div>
+      <h2 class="section-title">台灣中小企業的信賴之選</h2>
+    </div>
+    <div class="testimonials">
+      <div class="testimonial-card">
+        <div style="color:#F59E0B;font-size:1rem;margin-bottom:12px">★★★★★</div>
+        <p class="testimonial-quote">「以前客戶拖款我只能乾等。用了PayGuard之後，第32天系統就自動觸發理賠，5天後錢就進帳了。這對我們中小企業來說真的是救星！」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#3B5BDB,#4361EE)">陳</div>
+          <div>
+            <div class="testimonial-name">陳小明</div>
+            <div class="testimonial-title">台灣精密零件有限公司 | 總經理</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div style="color:#F59E0B;font-size:1rem;margin-bottom:12px">★★★★★</div>
+        <p class="testimonial-quote">「過去財務團隊處理帳款對帳要花2–3天，現在全自動化了。信用評分功能讓我們在接新客戶前就能有效評估風險，非常實用。」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#9333EA,#A855F7)">林</div>
+          <div>
+            <div class="testimonial-name">林志豪</div>
+            <div class="testimonial-title">新竹電子零件有限公司 | 財務長</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div style="color:#F59E0B;font-size:1rem;margin-bottom:12px">★★★★☆</div>
+        <p class="testimonial-quote">「透過PayGuard媒合到台灣銀行融資方案，利率2.85%，比自己去銀行跑省了很多時間。A級信用評分讓我們獲得更好的融資條件。」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#10B981,#34D399)">蔡</div>
+          <div>
+            <div class="testimonial-name">蔡志偉</div>
+            <div class="testimonial-title">桃園包裝材料有限公司 | 董事長</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Partners -->
+<section class="landing-section" style="padding:48px 40px">
+  <div class="section-inner" style="text-align:center">
+    <p style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:28px;font-weight:700">合作金融機構與夥伴</p>
+    <div class="partners-grid">
+      <div class="partner-logo">台灣銀行</div>
+      <div class="partner-logo">合作金庫</div>
+      <div class="partner-logo">第一銀行</div>
+      <div class="partner-logo">玉山銀行</div>
+      <div class="partner-logo">國泰世華銀行</div>
+      <div class="partner-logo">財政部電子發票</div>
+      <div class="partner-logo">台灣Pay</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section style="background:linear-gradient(135deg,#1E2A5E 0%,#3B5BDB 100%);padding:80px 40px;text-align:center">
+  <div style="max-width:600px;margin:0 auto">
+    <h2 style="font-size:2rem;color:white;margin-bottom:16px">立即開始保障您的應收帳款</h2>
+    <p style="color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:32px;line-height:1.7">免費試用30天，無需信用卡。加入超過1,500家台灣中小企業，讓PayGuard守護您的每一張發票。</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="dashboard.html" class="btn btn-lg" style="background:white;color:var(--blue-primary);border:2px solid white;font-size:1rem;padding:12px 28px">
+        免費開始使用
+      </a>
+      <a href="#" class="btn btn-lg btn-outline-white" style="font-size:1rem;padding:12px 28px" onclick="alert('感謝您的興趣！業務團隊將盡快與您聯繫。');return false;">
+        預約產品展示
+      </a>
+    </div>
+    <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:16px">✓ 免費試用 &nbsp;✓ 隨時取消 &nbsp;✓ 資料 256-bit 加密</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="landing-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">PayGuard</div>
+        <p class="footer-brand-desc">台灣B2B支付保障平台，整合電子發票、參數型保險與融資媒合，全面守護中小企業應收帳款安全。</p>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:700">FB</div>
+          <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:700">in</div>
+          <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:700">TW</div>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">產品功能</div>
+        <div class="footer-links">
+          <a href="dashboard.html">儀表板</a>
+          <a href="invoices.html">發票管理</a>
+          <a href="payments.html">支付管理</a>
+          <a href="insurance.html">保險管理</a>
+          <a href="credit.html">信用評分</a>
+          <a href="financing.html">融資媒合</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">公司資訊</div>
+        <div class="footer-links">
+          <a href="#">關於我們</a>
+          <a href="#">新聞中心</a>
+          <a href="#">合作夥伴</a>
+          <a href="#">職涯機會</a>
+          <a href="#">聯絡我們</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">法律資訊</div>
+        <div class="footer-links">
+          <a href="#">服務條款</a>
+          <a href="#">隱私政策</a>
+          <a href="#">資訊安全</a>
+          <a href="#">Cookie 設定</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 PayGuard 支付保障平台. 保留所有權利。</span>
+      <span>統一編號：12345678 | 台灣新竹科學園區</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const href = link.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
 </body>
 </html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>發票管理 | PayGuard 支付保障平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<div id="sidebar-mount"></div>
+
+<div class="app-layout">
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <a href="dashboard.html">儀表板</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">發票管理</span>
+        </div>
+        <h1 class="page-title">發票管理</h1>
+        <p class="page-subtitle">管理所有應收帳款發票，追蹤付款狀態</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          匯出
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="showToast('請選擇發票檔案上傳', 'info')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          上傳發票
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Summary Tabs -->
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" data-filter="all" onclick="filterByStatus('all', this)">全部 <span id="count-all" style="background:rgba(255,255,255,0.25);padding:1px 6px;border-radius:10px;font-size:0.7rem">50</span></button>
+      <button class="btn btn-ghost btn-sm" data-filter="paid" onclick="filterByStatus('paid', this)" style="color:var(--success)">已付款 <span id="count-paid" style="background:rgba(16,185,129,0.1);padding:1px 6px;border-radius:10px;font-size:0.7rem">20</span></button>
+      <button class="btn btn-ghost btn-sm" data-filter="pending" onclick="filterByStatus('pending', this)" style="color:var(--warning)">待付款 <span id="count-pending" style="background:rgba(245,158,11,0.1);padding:1px 6px;border-radius:10px;font-size:0.7rem">15</span></button>
+      <button class="btn btn-ghost btn-sm" data-filter="overdue" onclick="filterByStatus('overdue', this)" style="color:var(--danger)">逾期 <span id="count-overdue" style="background:rgba(239,68,68,0.1);padding:1px 6px;border-radius:10px;font-size:0.7rem">8</span></button>
+      <button class="btn btn-ghost btn-sm" data-filter="insured" onclick="filterByStatus('insured', this)" style="color:var(--blue-primary)">已投保 <span id="count-insured" style="background:rgba(59,91,219,0.1);padding:1px 6px;border-radius:10px;font-size:0.7rem">7</span></button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="search-input" placeholder="搜尋發票號碼、買方名稱..." oninput="applyFilters()">
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <label>買方</label>
+        <select id="filter-buyer" onchange="applyFilters()">
+          <option value="">全部買方</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>日期範圍</label>
+        <select id="filter-date" onchange="applyFilters()">
+          <option value="">全部時間</option>
+          <option value="2025">2025年</option>
+          <option value="2026">2026年</option>
+          <option value="q1-2026">2026 Q1</option>
+          <option value="q2-2026">2026 Q2</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="resetFilters()">清除篩選</button>
+    </div>
+
+    <!-- Invoice Table -->
+    <div class="card">
+      <div class="table-wrap" style="border:none;border-radius:0">
+        <table id="invoice-table">
+          <thead>
+            <tr>
+              <th data-sort="invoice_number" data-col-index="0">發票號碼</th>
+              <th data-sort="buyer_name" data-col-index="1">買方</th>
+              <th data-sort="issue_date" data-col-index="2">開立日</th>
+              <th data-sort="due_date" data-col-index="3">到期日</th>
+              <th data-sort="amount_ntd" data-col-index="4">金額</th>
+              <th>狀態</th>
+              <th data-sort="overdue_days" data-col-index="6">逾期天數</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="invoice-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                資料載入中...
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="pagination-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Detail Modal -->
+<div class="modal-overlay" id="invoice-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-invoice-title">發票詳情</h3>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">關閉</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('保險申請已提交', 'success');closeModal()">申請投保</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('invoices');
+
+let allInvoices = [];
+let filteredInvoices = [];
+let currentStatus = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 10;
+let buyerMap = {};
+
+document.addEventListener('payguard:dataLoaded', (e) => {
+  const data = e.detail;
+  buyerMap = {};
+  data.companies.forEach(c => { buyerMap[c.company_id] = c.company_name; });
+
+  // Populate buyer filter
+  const buyerSelect = document.getElementById('filter-buyer');
+  const buyers = data.companies.filter(c => c.type === 'buyer');
+  buyers.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.company_id;
+    opt.textContent = b.company_name;
+    buyerSelect.appendChild(opt);
+  });
+
+  allInvoices = data.invoices.map(inv => ({
+    ...inv,
+    buyer_name: buyerMap[inv.buyer_id] || inv.buyer_id
+  }));
+
+  updateCounts();
+  applyFilters();
+  initTableSorting(document.getElementById('invoice-table'));
+});
+
+function updateCounts() {
+  const counts = { all: allInvoices.length, paid: 0, pending: 0, overdue: 0, insured: 0 };
+  allInvoices.forEach(inv => {
+    if (counts.hasOwnProperty(inv.status)) counts[inv.status]++;
+  });
+  Object.keys(counts).forEach(k => {
+    const el = document.getElementById(`count-${k}`);
+    if (el) el.textContent = counts[k];
+  });
+}
+
+function filterByStatus(status, btn) {
+  currentStatus = status;
+  currentPage = 1;
+  document.querySelectorAll('[data-filter]').forEach(b => {
+    b.className = 'btn btn-ghost btn-sm';
+    b.style.color = '';
+    if (b.dataset.filter === 'paid') b.style.color = 'var(--success)';
+    if (b.dataset.filter === 'pending') b.style.color = 'var(--warning)';
+    if (b.dataset.filter === 'overdue') b.style.color = 'var(--danger)';
+    if (b.dataset.filter === 'insured') b.style.color = 'var(--blue-primary)';
+  });
+  btn.className = 'btn btn-primary btn-sm';
+  btn.style.color = '';
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const buyerFilter = document.getElementById('filter-buyer').value;
+  const dateFilter = document.getElementById('filter-date').value;
+
+  filteredInvoices = allInvoices.filter(inv => {
+    if (currentStatus !== 'all' && inv.status !== currentStatus) return false;
+    if (search && !inv.invoice_number.toLowerCase().includes(search) && !inv.buyer_name.toLowerCase().includes(search)) return false;
+    if (buyerFilter && inv.buyer_id !== buyerFilter) return false;
+    if (dateFilter) {
+      if (dateFilter === '2025' && !inv.issue_date.startsWith('2025')) return false;
+      if (dateFilter === '2026' && !inv.issue_date.startsWith('2026')) return false;
+      if (dateFilter === 'q1-2026' && !(inv.issue_date >= '2026-01-01' && inv.issue_date <= '2026-03-31')) return false;
+      if (dateFilter === 'q2-2026' && !(inv.issue_date >= '2026-04-01' && inv.issue_date <= '2026-06-30')) return false;
+    }
+    return true;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-buyer').value = '';
+  document.getElementById('filter-date').value = '';
+  currentStatus = 'all';
+  document.querySelectorAll('[data-filter]').forEach(b => {
+    b.className = 'btn btn-ghost btn-sm';
+    b.style.color = '';
+    if (b.dataset.filter === 'all') b.className = 'btn btn-primary btn-sm';
+    if (b.dataset.filter === 'paid') b.style.color = 'var(--success)';
+    if (b.dataset.filter === 'pending') b.style.color = 'var(--warning)';
+    if (b.dataset.filter === 'overdue') b.style.color = 'var(--danger)';
+    if (b.dataset.filter === 'insured') b.style.color = 'var(--blue-primary)';
+  });
+  applyFilters();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('invoice-tbody');
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filteredInvoices.slice(start, start + PAGE_SIZE);
+
+  if (pageItems.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        找不到符合條件的發票
+      </div>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = pageItems.map(inv => {
+      const overdueDays = parseInt(inv.overdue_days) || 0;
+      const isOverdue = inv.status === 'overdue';
+      const amount = formatNTD(parseInt(inv.amount_ntd));
+      const canInsure = inv.status === 'pending' || inv.status === 'overdue';
+
+      return `<tr onclick="showInvoiceDetail('${inv.invoice_id}')" style="cursor:pointer" data-invoice-id="${inv.invoice_id}">
+        <td class="invoice-num">${inv.invoice_number}</td>
+        <td>
+          <div title="${inv.buyer_name}" style="font-size:0.875rem;font-weight:500;color:var(--text-heading)">${inv.buyer_name.length > 8 ? inv.buyer_name.substring(0,8)+'...' : inv.buyer_name}</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">${inv.buyer_id}</div>
+        </td>
+        <td style="font-size:0.8rem;color:var(--text-muted)">${formatDate(inv.issue_date)}</td>
+        <td style="font-size:0.8rem;${isOverdue ? 'color:var(--danger);font-weight:600' : ''}">${formatDate(inv.due_date)}</td>
+        <td class="amount">${amount}</td>
+        <td>${getStatusBadge(inv.status)}</td>
+        <td>${isOverdue ? `<span style="color:var(--danger);font-weight:700">${overdueDays > 0 ? overdueDays : '逾期'} 天</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td onclick="event.stopPropagation()">
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" onclick="showInvoiceDetail('${inv.invoice_id}')" style="padding:4px 8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              查看
+            </button>
+            ${canInsure ? `<button class="btn btn-primary btn-sm" onclick="applyInsurance('${inv.invoice_id}')" style="padding:4px 8px">投保</button>` : ''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  const paginationWrap = document.getElementById('pagination-wrap');
+  paginationWrap.innerHTML = '';
+  if (filteredInvoices.length > PAGE_SIZE) {
+    paginationWrap.appendChild(createPagination(filteredInvoices.length, currentPage, PAGE_SIZE, (page) => {
+      currentPage = page;
+      renderTable();
+    }));
+  }
+}
+
+function showInvoiceDetail(invoiceId) {
+  const inv = allInvoices.find(i => i.invoice_id === invoiceId);
+  if (!inv) return;
+
+  document.getElementById('modal-invoice-title').textContent = `發票詳情 — ${inv.invoice_number}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">發票號碼</div>
+        <div style="font-weight:700;color:var(--text-heading);font-family:monospace">${inv.invoice_number}</div>
+      </div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">狀態</div>
+        <div>${getStatusBadge(inv.status)}</div>
+      </div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">賣方</div>
+        <div style="font-size:0.875rem;font-weight:600">${buyerMap[inv.seller_id] || inv.seller_id}</div>
+      </div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">買方</div>
+        <div style="font-size:0.875rem;font-weight:600">${inv.buyer_name}</div>
+      </div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">開立日期</div>
+        <div style="font-size:0.875rem">${formatDate(inv.issue_date)}</div>
+      </div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">到期日期</div>
+        <div style="font-size:0.875rem;${inv.status==='overdue'?'color:var(--danger);font-weight:700':''}">${formatDate(inv.due_date)}</div>
+      </div>
+    </div>
+    <div style="background:var(--bg-page);border-radius:10px;padding:16px;margin-bottom:16px;text-align:center">
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">發票金額</div>
+      <div style="font-size:2rem;font-weight:800;color:var(--text-heading)">${formatNTD(parseInt(inv.amount_ntd))}</div>
+    </div>
+    ${inv.status === 'paid' ? `<div class="callout green"><svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg><div><div class="callout-title">付款完成</div><div class="callout-text">付款日期：${formatDate(inv.payment_date)}　付款方式：${inv.payment_method === 'bank_transfer' ? '銀行轉帳' : '台灣Pay QR'}</div></div></div>` : ''}
+    ${inv.status === 'overdue' ? `<div class="callout" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15)"><svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><div class="callout-title" style="color:var(--danger)">帳款逾期</div><div class="callout-text">已逾期 ${inv.overdue_days || '數'} 天，建議立即申請保險理賠</div></div></div>` : ''}
+    ${inv.insurance_policy_id ? `<div class="callout blue" style="margin-top:12px"><svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><div><div class="callout-title">保單保障中</div><div class="callout-text">保單編號：${inv.insurance_policy_id}　逾期30天自動觸發理賠</div></div></div>` : ''}
+  `;
+
+  document.getElementById('invoice-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('invoice-modal').classList.remove('open');
+}
+
+function applyInsurance(invoiceId) {
+  event.stopPropagation();
+  showToast('保險申請頁面開啟中...', 'info');
+  setTimeout(() => { window.location.href = 'insurance.html'; }, 1000);
+}
+
+function exportCSV() {
+  showToast('發票資料匯出中...', 'info');
+}
+
+// Close modal on overlay click
+document.getElementById('invoice-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
