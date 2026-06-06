@@ -25,7 +25,7 @@
   --danger: #EF4444;
   --danger-bg: #FEF2F2;
   --border: #E2E8F0;
-  --sidebar-width: 240px;
+  --sidebar-width: 320px;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
   --shadow-lg: 0 10px 30px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
@@ -45,7 +45,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 28px;
   scroll-behavior: smooth;
 }
 
@@ -107,7 +107,7 @@ p { color: var(--text-body); }
   margin-left: var(--sidebar-width);
   flex: 1;
   min-width: 0;
-  padding: 24px;
+  padding: 40px 48px;
   animation: fadeInUp 0.4s ease;
 }
 
@@ -129,7 +129,7 @@ p { color: var(--text-body); }
 }
 
 .sidebar-logo {
-  padding: 24px 20px 20px;
+  padding: 36px 28px 28px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
@@ -140,8 +140,8 @@ p { color: var(--text-body); }
 }
 
 .logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
 }
 
@@ -165,7 +165,7 @@ p { color: var(--text-body); }
 
 .sidebar-nav {
   flex: 1;
-  padding: 16px 12px;
+  padding: 24px 16px;
 }
 
 .nav-section-label {
@@ -181,15 +181,15 @@ p { color: var(--text-body); }
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 14px;
+  padding: 14px 18px;
   border-radius: var(--radius-sm);
   color: rgba(255,255,255,0.75);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   text-decoration: none;
 }
 
@@ -206,8 +206,8 @@ p { color: var(--text-body); }
 }
 
 .nav-item svg {
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
   opacity: 0.8;
 }
@@ -217,22 +217,22 @@ p { color: var(--text-body); }
 }
 
 .sidebar-footer {
-  padding: 16px 12px;
+  padding: 24px 16px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .user-card {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 14px;
+  padding: 14px;
   border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.08);
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--purple-accent), var(--blue-card));
   display: flex;
@@ -313,9 +313,9 @@ p { color: var(--text-body); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 36px;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 }
 
 .page-title {
@@ -447,7 +447,7 @@ p { color: var(--text-body); }
 }
 
 .card-header {
-  padding: 16px 20px;
+  padding: 24px 32px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -462,7 +462,7 @@ p { color: var(--text-body); }
 }
 
 .card-body {
-  padding: 20px;
+  padding: 32px;
 }
 
 .card-footer {
@@ -474,15 +474,15 @@ p { color: var(--text-body); }
 /* Stat Cards */
 .stat-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 36px;
 }
 
 .stat-card {
   background: var(--bg-card);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: 32px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -521,8 +521,8 @@ p { color: var(--text-body); }
 }
 
 .stat-icon {
-  width: 36px;
-  height: 36px;
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -535,7 +535,7 @@ p { color: var(--text-body); }
 .stat-icon.red { background: rgba(239,68,68,0.1); color: var(--danger); }
 .stat-icon.purple { background: rgba(147,51,234,0.1); color: var(--purple-accent); }
 
-.stat-icon svg { width: 18px; height: 18px; }
+.stat-icon svg { width: 30px; height: 30px; }
 
 .stat-value {
   font-size: 1.5rem;
@@ -632,7 +632,7 @@ p { color: var(--text-body); }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  padding: 22px 28px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -726,7 +726,7 @@ thead {
 }
 
 thead th {
-  padding: 12px 16px;
+  padding: 20px 24px;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 700;
@@ -759,7 +759,7 @@ tbody tr:nth-child(even) { background-color: rgba(240,244,255,0.3); }
 tbody tr:nth-child(even):hover { background-color: #F8FAFF; }
 
 td {
-  padding: 12px 16px;
+  padding: 20px 24px;
   color: var(--text-body);
   vertical-align: middle;
 }
@@ -849,8 +849,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 24px;
+  margin-bottom: 36px;
 }
 
 /* =========================================
@@ -939,8 +939,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
    ========================================= */
 .policy-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
 }
 
 .policy-card {
@@ -959,7 +959,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 
 .policy-card-header {
   background: linear-gradient(135deg, var(--blue-primary), var(--blue-card));
-  padding: 14px 16px;
+  padding: 24px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -977,7 +977,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .policy-card-body {
-  padding: 16px;
+  padding: 28px;
 }
 
 .policy-detail-row {
@@ -1016,8 +1016,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 
 .gauge-wrap {
   position: relative;
-  width: 200px;
-  height: 110px;
+  width: 340px;
+  height: 180px;
   overflow: hidden;
 }
 
@@ -1025,8 +1025,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   position: absolute;
   top: 0;
   left: 0;
-  width: 200px;
-  height: 200px;
+  width: 340px;
+  height: 340px;
   border-radius: 50%;
   background: conic-gradient(
     from 180deg,
@@ -1043,14 +1043,14 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 152px;
-  height: 76px;
+  width: 260px;
+  height: 130px;
   background: var(--bg-card);
-  border-radius: 0 0 76px 76px;
+  border-radius: 0 0 130px 130px;
 }
 
 .gauge-value {
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: 800;
   color: var(--text-heading);
   line-height: 1;
@@ -1074,16 +1074,16 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
    ========================================= */
 .bank-offer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 36px;
 }
 
 .bank-card {
   background: var(--bg-card);
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 40px 32px;
   text-align: center;
   transition: var(--transition);
   position: relative;
@@ -1115,17 +1115,17 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .bank-logo {
-  width: 56px;
-  height: 56px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--blue-primary), var(--blue-card));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
+  margin: 0 auto 16px;
   color: white;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .bank-name { font-size: 1rem; font-weight: 700; color: var(--text-heading); }
@@ -1148,7 +1148,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 24px 32px;
   border-top: 1px solid var(--border);
   background: rgba(240,244,255,0.3);
 }
@@ -1161,8 +1161,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .page-btn {
-  width: 32px;
-  height: 32px;
+  width: 56px;
+  height: 56px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   border-radius: var(--radius-sm);
@@ -1306,8 +1306,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .quick-action-btn .qa-icon {
-  width: 40px;
-  height: 40px;
+  width: 72px;
+  height: 72px;
   border-radius: var(--radius-md);
   background: var(--blue-primary);
   display: flex;
@@ -1402,16 +1402,16 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   z-index: 100;
-  padding: 0 40px;
+  padding: 0 60px;
 }
 
 .landing-nav-inner {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 96px;
 }
 
 .nav-logo {
@@ -1448,7 +1448,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 
 .landing-hero {
   background: linear-gradient(135deg, #1E2A5E 0%, #2F4AB5 50%, #4361EE 100%);
-  padding: 100px 40px 80px;
+  padding: 140px 60px 120px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -1482,7 +1482,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: 5rem;
   font-weight: 800;
   color: white;
   line-height: 1.15;
@@ -1497,7 +1497,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .hero-subtitle {
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   color: rgba(255,255,255,0.75);
   line-height: 1.7;
   margin-bottom: 36px;
@@ -1527,7 +1527,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .landing-section {
-  padding: 80px 40px;
+  padding: 120px 60px;
 }
 
 .landing-section.alt {
@@ -1555,7 +1555,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .section-title {
-  font-size: 2.2rem;
+  font-size: 3rem;
   font-weight: 800;
   color: var(--text-heading);
   margin-bottom: 12px;
@@ -1588,14 +1588,14 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 .pain-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
 
 .pain-icon {
-  width: 64px;
-  height: 64px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 2.8rem;
 }
 
 .pain-icon.red { background: rgba(239,68,68,0.1); }
@@ -1617,8 +1617,8 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  width: 280px;
+  gap: 6px;
+  width: 400px;
 }
 
 .pyramid-layer {
@@ -1708,15 +1708,15 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 }
 
 .step-num {
-  width: 56px;
-  height: 56px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: white;
-  border: 3px solid var(--blue-primary);
+  border: 4px solid var(--blue-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--blue-primary);
   z-index: 1;
@@ -1729,7 +1729,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 /* Stats Bar */
 .stats-bar {
   background: linear-gradient(135deg, #1E2A5E 0%, #3B5BDB 100%);
-  padding: 48px 40px;
+  padding: 80px 60px;
 }
 
 .stats-bar-inner {
@@ -1741,7 +1741,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
   text-align: center;
 }
 
-.stat-bar-value { font-size: 2.5rem; font-weight: 800; color: white; line-height: 1; }
+.stat-bar-value { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
 .stat-bar-label { font-size: 0.875rem; color: rgba(255,255,255,0.6); margin-top: 6px; }
 
 /* Testimonials */
@@ -1816,7 +1816,7 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 /* Footer */
 .landing-footer {
   background: var(--text-heading);
-  padding: 48px 40px 24px;
+  padding: 80px 60px 40px;
   color: rgba(255,255,255,0.6);
 }
 
@@ -1892,13 +1892,13 @@ td.invoice-num { font-family: 'Courier New', monospace; font-size: 0.8rem; color
 
   .main-content {
     margin-left: 0;
-    padding: 16px;
-    padding-top: 60px;
+    padding: 24px;
+    padding-top: 80px;
   }
 
-  .landing-hero { padding: 80px 20px 60px; }
-  .hero-title { font-size: 2.2rem; }
-  .landing-section { padding: 48px 20px; }
+  .landing-hero { padding: 100px 30px 80px; }
+  .hero-title { font-size: 3rem; }
+  .landing-section { padding: 80px 30px; }
   .pain-cards { grid-template-columns: 1fr; }
   .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
   .testimonials { grid-template-columns: 1fr; }
